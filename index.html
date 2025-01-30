@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Instalación de Aurora y Juegos para Xbox 360</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(to right, #001f3f, #0074D9);
+            color: white;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+        }
+        header {
+            padding: 20px;
+            font-size: 24px;
+            font-weight: bold;
+            background: #001f3f;
+            animation: fadeIn 2s;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+        }
+        .logo {
+            font-size: 30px;
+            font-weight: bold;
+            color: #00c3ff;
+            animation: bounce 2s infinite;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            padding: 20px;
+        }
+        .juego {
+            width: 150px;
+            margin: 10px;
+            padding: 10px;
+            background: white;
+            color: black;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            text-align: center;
+            animation: fadeIn 1.5s;
+        }
+        .juego:hover {
+            transform: scale(1.1);
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.7);
+        }
+        .juego img {
+            width: 100%;
+            border-radius: 10px;
+        }
+        button {
+            background: #0074D9;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background: #005bb5;
+        }
+        .carrito-item {
+            display: flex;
+            justify-content: space-between;
+            background: #003366;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">MG</div>
+        Instalación de Aurora y Juegos para Xbox 360
+    </header>
+    <section id="servicio">
+        <h2>Elige tu servicio</h2>
+        <button onclick="agregarAlCarrito({nombre: 'Instalación de Aurora'})">Instalacion de Aurora</button>
+    </section>
+    <section id="juegos">
+        <h2>Selecciona tus juegos</h2>
+        <div class="container" id="lista-juegos"></div>
+    </section>
+    <section id="carrito">
+        <h2>Carrito de compras</h2>
+        <ul id="lista-carrito"></ul>
+        <button onclick="enviarPedido()">Enviar Pedido a WhatsApp</button>
+    </section>
+    <script>
+        const juegos = [
+            { nombre: "GTA V", imagen: "https://http2.mlstatic.com/D_NQ_NP_602952-MLA49211407962_022022-O.webp" },
+            { nombre: "Call of Duty: Black Ops II", imagen: "https://http2.mlstatic.com/D_NQ_NP_874710-MLA45077441790_032021-O.webp" },
+            { nombre: "Red Dead Redemption", imagen: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRv3Cv8hff8sXcb9bBku1k4smpOX3AAs9rIeA&s" },
+            { nombre: "Halo Reach", imagen: "https://i.3djuegos.com/juegos/4315/halo_reach/fotos/ficha/halo_reach-1713636.jpg" },
+            { nombre: "FIFA 19", imagen: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRSsQI_DTb2m9DdfvoQW_tZcqMEgSGWhJObEQ&s" },
+            { nombre: "Mortal Kombat 9", imagen: "https://i.3djuegos.com/juegos/8357/mortal_kombat_komplete_edition/fotos/ficha/mortal_kombat_komplete_edition-2029470.jpg" },
+            { nombre: "Minecraft", imagen: "https://m.media-amazon.com/images/I/71XFbyaDM1L._AC_UF1000,1000_QL80_.jpg" }
+          
+            // Agrega más juegos aquí hasta llegar a 140
+        ];
+        
+        const listaJuegos = document.getElementById("lista-juegos");
+        const listaCarrito = document.getElementById("lista-carrito");
+        let carrito = [];
+        
+        juegos.forEach(juego => {
+            let div = document.createElement("div");
+            div.classList.add("juego");
+            div.innerHTML = `<img src="${juego.imagen}" alt="${juego.nombre}"><br>${juego.nombre}`;
+            div.onclick = () => agregarAlCarrito(juego);
+            listaJuegos.appendChild(div);
+        });
+        
+        function agregarAlCarrito(juego) {
+            if (!carrito.some(item => item.nombre === juego.nombre)) {
+                carrito.push(juego);
+                actualizarCarrito();
+            }
+        }
+        
+        function eliminarDelCarrito(index) {
+            carrito.splice(index, 1);
+            actualizarCarrito();
+        }
+        
+        function actualizarCarrito() {
+            listaCarrito.innerHTML = "";
+            carrito.forEach((item, index) => {
+                let li = document.createElement("li");
+                li.classList.add("carrito-item");
+                li.innerHTML = `${item.nombre} <button onclick="eliminarDelCarrito(${index})">❌</button>`;
+                listaCarrito.appendChild(li);
+            });
+        }
+        
+        function enviarPedido() {
+            if (carrito.length === 0) {
+                alert("El carrito está vacío. Agrega juegos antes de enviar el pedido.");
+                return;
+            }
+            let mensaje = encodeURIComponent("Hola, quiero pedir: " + carrito.map(j => j.nombre).join(", "));
+            window.location.href = `https://wa.me/095636020?text=${mensaje}`;
+        }
+    </script>
+</body>
+</html>
